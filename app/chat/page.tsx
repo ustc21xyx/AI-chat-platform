@@ -3,8 +3,7 @@
 import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import MessageBubble from '@/components/chat/MessageBubble'
-import { Copy, Send, Square } from 'lucide-react'
-import copy from 'copy-to-clipboard'
+import { IconCopy as Copy, IconSend as Send, IconStop as Square } from '@/components/ui/icons'
 
  type ChatMessage = {
   role: 'user' | 'assistant'
@@ -80,9 +79,9 @@ export default function ChatPage() {
     abortRef.current = null
   }
 
-  const copyAll = () => {
+  const copyAll = async () => {
     const text = messages.map(m => `${m.role === 'user' ? '你' : '助手'}：${m.content}`).join('\n')
-    copy(text)
+    try { await navigator.clipboard.writeText(text) } catch {}
   }
 
   return (

@@ -20,7 +20,18 @@ export default function MessageBubble({ role, content }: Props) {
       </div>
       <div className="flex-1">
         <div className="prose prose-slate max-w-none text-slate-800 text-[15px] leading-7">
-          <ReactMarkdown remarkPlugins={[remarkGfm as any]} rehypePlugins={[rehypeHighlight as any]}>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm as any]}
+            rehypePlugins={[rehypeHighlight as any]}
+            components={{
+              pre: ({node, ...props}) => (
+                <pre className="not-prose" {...props} />
+              ),
+              code: ({node, inline, className, children, ...props}: any) => (
+                <code className={`rounded-md ${className || ''}`} {...props}>{children}</code>
+              )
+            }}
+          >
             {content || '…'}
           </ReactMarkdown>
         </div>
