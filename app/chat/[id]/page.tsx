@@ -27,6 +27,22 @@ export default function ChatPageById() {
     }
   }, [id, isReady, conversations.length, active?.id])
 
+
+  // 若刚创建还未可见，短暂重试一次，避免误回空白页
+  useEffect(() => {
+    let t: any
+    if (id && isReady) {
+      const exists = conversations.some(c => c.id === id)
+      if (!exists) {
+        t = setTimeout(() => {
+          const exists2 = conversations.some(c => c.id === id)
+          if (!exists2) router.replace('/chat')
+        }, 60)
+      }
+    }
+    return () => t && clearTimeout(t)
+  }, [id, isReady, conversations.length])
+
   const messages = active?.messages ?? []
   const [input, setInput] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)

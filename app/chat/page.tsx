@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import MessageBubble from '@/components/chat/MessageBubble'
@@ -57,14 +58,14 @@ export default function ChatPage() {
   const ensureRealConversation = () => {
     // 创建真实会话，把 tempMessages 灌入 Provider 并设为 active，并无感跳转到深链
     const conv = createConversation()
-    setActive(conv.id)
-    setMessagesForActive(tempMessages)
+    // 同步刷新 activeId，降低路由与状态的竞态
+    flushSync(() => {
+      setActive(conv.id)
+      setMessagesForActive(tempMessages)
+    })
     // 触发命名（基于第一条用户消息）
     setTimeout(() => generateTitleForActive(), 0)
-    // 延后一拍再跳转，避免 /chat/[id] 初载时还未看到新会话而误回 /chat
-    setTimeout(() => {
-      router.replace(`/chat/${conv.id}`)
-    }, 0)
+    router.replace(`/chat/${conv.id}`)
     return conv
   }
 
