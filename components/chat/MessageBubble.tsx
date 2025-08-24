@@ -41,22 +41,22 @@ export default function MessageBubble({ role, content, onCopy, onRetry, onDelete
             {content || '…'}
           </ReactMarkdown>
         </div>
-        <div className={`absolute ${isUser ? 'right-0' : 'left-0'} -top-3 opacity-0 group-hover:opacity-100 transition pointer-events-auto`}>
-          <div className="flex items-center gap-1">
+        <div className={`mt-1 ${isUser ? 'text-right' : 'text-left'} opacity-0 group-hover:opacity-100 transition`}>
+          <div className="inline-flex items-center gap-1 text-slate-500">
             <Tooltip content="复制">
-              <IconButton size="sm" onClick={onCopy}>
+              <IconButton size="xs" variant="ghost" onClick={onCopy}>
                 <IconCopy />
               </IconButton>
             </Tooltip>
             {!isUser && (
               <Tooltip content="重试">
-                <IconButton size="sm" onClick={onRetry}>
+                <IconButton size="xs" variant="ghost" onClick={onRetry}>
                   <IconRefresh />
                 </IconButton>
               </Tooltip>
             )}
             <Tooltip content="删除">
-              <IconButton size="sm" onClick={onDelete}>
+              <IconButton size="xs" variant="ghost" onClick={onDelete}>
                 <IconTrash />
               </IconButton>
             </Tooltip>
