@@ -15,10 +15,8 @@ export default function Sidebar() {
         <a
           href="/chat"
           className="group relative flex items-center gap-2 px-3 py-2 rounded-md text-slate-700 hover:bg-white hover:shadow-sm transition"
-          onClick={(e) => {
-            e.preventDefault()
+          onClick={() => {
             setActive(null) // 进入空白会话
-            window.history.pushState({}, '', '/chat')
           }}
         >
           <Plus size={16} className="text-slate-500 group-hover:text-slate-700" />

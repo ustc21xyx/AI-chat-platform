@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import MessageBubble from '@/components/chat/MessageBubble'
 import { IconCopy as Copy, IconSend as Send, IconStop as Square } from '@/components/ui/icons'
@@ -10,6 +11,7 @@ const copyText = async (text: string) => { try { await navigator.clipboard.write
 
 export default function ChatPage() {
   const { createConversation, setActive, setMessagesForActive, generateTitleForActive } = useConversations()
+  const router = useRouter()
   // 临时消息：未入库的“空白会话”内容
   const [tempMessages, setTempMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -50,12 +52,14 @@ export default function ChatPage() {
   }
 
   const ensureRealConversation = () => {
-    // 创建真实会话，把 tempMessages 灌入 Provider 并设为 active
+    // 创建真实会话，把 tempMessages 灌入 Provider 并设为 active，并无感跳转到深链
     const conv = createConversation()
     setActive(conv.id)
     setMessagesForActive(tempMessages)
     // 触发命名（基于第一条用户消息）
     setTimeout(() => generateTitleForActive(), 0)
+    // 深链跳转
+    router.replace(`/chat/${conv.id}`)
     return conv
   }
 
