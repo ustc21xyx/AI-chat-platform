@@ -14,6 +14,9 @@ export default function ChatPage() {
   const router = useRouter()
   // 临时消息：未入库的“空白会话”内容
   const [tempMessages, setTempMessages] = useState<ChatMessage[]>([])
+  // 如果用户在 /chat 页面但 activeId 被外部切空（例如删除当前深链会话后返回），保持停留在空白页
+  // 不做任何重定向，避免“突然切回空白”的抖动
+
   const [input, setInput] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
   const abortRef = useRef<AbortController | null>(null)
@@ -58,8 +61,10 @@ export default function ChatPage() {
     setMessagesForActive(tempMessages)
     // 触发命名（基于第一条用户消息）
     setTimeout(() => generateTitleForActive(), 0)
-    // 深链跳转
-    router.replace(`/chat/${conv.id}`)
+    // 延后一拍再跳转，避免 /chat/[id] 初载时还未看到新会话而误回 /chat
+    setTimeout(() => {
+      router.replace(`/chat/${conv.id}`)
+    }, 0)
     return conv
   }
 

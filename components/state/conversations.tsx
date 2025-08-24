@@ -95,6 +95,9 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
   }
 
   const setMessagesForActive = (messages: ChatMessage[]) => {
+  // 强化一致性：删除会话时，如果删除的是当前 active，则仅清空 activeId，不再自动选择其他会话。
+  // 这样 /chat/[id] 会回到 /chat，/chat 本身保持空白，不会跳去其它会话。
+
     if (!active) return
     setConversations(prev => prev.map(c => (c.id === active.id ? { ...c, messages, updatedAt: Date.now() } : c)))
   }
