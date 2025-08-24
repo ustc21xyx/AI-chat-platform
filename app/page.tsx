@@ -1,14 +1,17 @@
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 export default function HomePage() {
   return (
-    <main style={{maxWidth: 960, margin: '0 auto', padding: '24px 16px'}}>
-      <h1 style={{fontSize: 24, marginBottom: 16}}>中文AI聊天公益平台</h1>
-      <p style={{color: '#64748b'}}>这是前端应用的起始页。请前往聊天页体验。</p>
-      <ul style={{marginTop: 16, lineHeight: 2}}>
-        <li>➡️ <Link href="/chat">前往聊天页</Link></li>
-        <li>📄 <a href="https://github.com/" target="_blank" rel="noreferrer">查看项目文档（docs/）</a></li>
-      </ul>
+    <main>
+      <section className="py-10">
+        <h1 className="text-2xl font-semibold">中文AI聊天公益平台</h1>
+        <p className="text-slate-500 mt-1">这是前端应用的起始页。请前往聊天页体验。</p>
+        <div className="flex gap-3 mt-4">
+          <Link href="/chat"><Button>前往聊天页</Button></Link>
+          <a href="https://github.com/" target="_blank" rel="noreferrer"><Button variant="outline">查看文档</Button></a>
+        </div>
+      </section>
     </main>
   )
 }

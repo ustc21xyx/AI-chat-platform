@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
+import { Button } from '@/components/ui/button'
 
 type ChatMessage = {
   role: 'user' | 'assistant'
@@ -40,7 +41,6 @@ export default function ChatPage() {
         const { done, value } = await reader.read()
         if (done) break
         const chunk = decoder.decode(value, { stream: true })
-        // 解析形如: data: xxx\n\n 的行
         const lines = chunk.split('\n')
         for (const line of lines) {
           const trimmed = line.trim()
@@ -78,35 +78,31 @@ export default function ChatPage() {
   }
 
   return (
-    <main style={{maxWidth: 960, margin: '0 auto', padding: '24px 16px'}}>
-      <h1 style={{fontSize: 20, marginBottom: 12}}>聊天</h1>
+    <main>
+      <h1 className="text-xl font-semibold mb-3">聊天</h1>
 
-      <div style={{border: '1px solid #e5e7eb', borderRadius: 8, padding: 12, minHeight: 240}}>
+      <div className="border rounded-lg p-3 min-h-[240px]">
         {messages.length === 0 && (
-          <div style={{color: '#94a3b8'}}>开始对话吧～</div>
+          <div className="text-slate-400">开始对话吧～</div>
         )}
         {messages.map((m, idx) => (
-          <div key={idx} style={{whiteSpace: 'pre-wrap', padding: '6px 0'}}>
+          <div key={idx} className="whitespace-pre-wrap py-1.5">
             <b>{m.role === 'user' ? '你' : '助手'}：</b> {m.content}
           </div>
         ))}
       </div>
 
-      <div style={{display: 'flex', gap: 8, marginTop: 12}}>
+      <div className="flex gap-2 mt-3">
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="输入你的问题..."
           rows={3}
-          style={{flex: 1, padding: 8, border: '1px solid #e5e7eb', borderRadius: 8}}
+          className="flex-1 p-2 border rounded-lg"
         />
-        <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
-          <button onClick={handleSend} disabled={isStreaming} style={{padding: '8px 12px', borderRadius: 8, border: '1px solid #e5e7eb'}}>
-            发送
-          </button>
-          <button onClick={handleStop} disabled={!isStreaming} style={{padding: '8px 12px', borderRadius: 8, border: '1px solid #e5e7eb'}}>
-            停止
-          </button>
+        <div className="flex flex-col gap-2">
+          <Button onClick={handleSend} disabled={isStreaming}>发送</Button>
+          <Button onClick={handleStop} disabled={!isStreaming} variant="outline">停止</Button>
         </div>
       </div>
     </main>

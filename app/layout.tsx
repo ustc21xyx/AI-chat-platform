@@ -13,7 +13,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN">
-      <body>{children}</body>
+      <body className="min-h-screen bg-white text-slate-800">
+        <header className="border-b sticky top-0 bg-white/70 backdrop-blur">
+          <div className="max-w-5xl mx-auto px-4 py-3 font-medium">中文AI聊天公益平台</div>
+        </header>
+        <main className="max-w-5xl mx-auto px-4 py-6">
+          {children}
+        </main>
+      </body>
     </html>
   )
 }
