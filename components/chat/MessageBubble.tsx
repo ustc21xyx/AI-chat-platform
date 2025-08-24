@@ -6,7 +6,6 @@ import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import 'highlight.js/styles/github.css'
 import { IconButton } from '@/components/ui/icon-button'
-import { Tooltip } from '@/components/ui/tooltip'
 import { IconCopy, IconRefresh, IconTrash } from '@/components/ui/icons'
 
 type Props = {
@@ -42,24 +41,18 @@ export default function MessageBubble({ role, content, onCopy, onRetry, onDelete
           </ReactMarkdown>
         </div>
         <div className={`mt-1 ${isUser ? 'text-right' : 'text-left'} opacity-0 group-hover:opacity-100 transition`}>
-          <div className="inline-flex items-center gap-1 text-slate-500">
-            <Tooltip content="复制">
-              <IconButton size="xs" variant="ghost" onClick={onCopy}>
-                <IconCopy />
-              </IconButton>
-            </Tooltip>
+          <div className="inline-flex items-center gap-1 text-slate-400">
+            <IconButton size="xs" variant="ghost" onClick={onCopy} aria-label="复制">
+              <IconCopy />
+            </IconButton>
             {!isUser && (
-              <Tooltip content="重试">
-                <IconButton size="xs" variant="ghost" onClick={onRetry}>
-                  <IconRefresh />
-                </IconButton>
-              </Tooltip>
-            )}
-            <Tooltip content="删除">
-              <IconButton size="xs" variant="ghost" onClick={onDelete}>
-                <IconTrash />
+              <IconButton size="xs" variant="ghost" onClick={onRetry} aria-label="重试">
+                <IconRefresh />
               </IconButton>
-            </Tooltip>
+            )}
+            <IconButton size="xs" variant="ghost" onClick={onDelete} aria-label="删除">
+              <IconTrash />
+            </IconButton>
           </div>
         </div>
       </div>
