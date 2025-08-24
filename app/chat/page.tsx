@@ -10,6 +10,10 @@ import { IconCopy as Copy, IconSend as Send, IconStop as Square } from '@/compon
   content: string
 }
 
+const copyText = async (text: string) => {
+  try { await navigator.clipboard.writeText(text) } catch {}
+}
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -97,7 +101,31 @@ export default function ChatPage() {
             <div className="text-slate-400">开始对话吧～</div>
           )}
           {messages.map((m, idx) => (
-            <MessageBubble key={idx} role={m.role} content={m.content} />
+            <MessageBubble
+              key={idx}
+              role={m.role}
+              content={m.content}
+              onCopy={() => copyText(m.content)}
+              onRetry={() => {
+                // 简化：从该消息及之前的上下文重试（若是助手消息）
+                if (m.role === 'assistant') {
+                  const until = messages.slice(0, idx)
+                  setMessages([...until, { role: 'assistant', content: '' }])
+                  // 这里沿用当前 handleSend 的 mock 逻辑，可抽出复用
+                  // 为避免较大重构，暂时触发一次发送：把“最后一个用户消息”再发一次
+                  const lastUserIdx = until.map(x=>x.role).lastIndexOf('user')
+                  if (lastUserIdx !== -1) {
+                    setInput(messages[lastUserIdx].content)
+                    setTimeout(() => handleSend(), 0)
+                  }
+                }
+              }}
+              onDelete={() => {
+                const cp = [...messages]
+                cp.splice(idx,1)
+                setMessages(cp)
+              }}
+            />
           ))}
         </div>
         <div className="border-t p-3">

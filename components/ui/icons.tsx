@@ -27,4 +27,10 @@ export const IconSend = (props: any) => (
 export const IconStop = (props: any) => (
   <Icon {...props}><rect x="6" y="6" width="12" height="12" rx="2"/></Icon>
 )
+export const IconRefresh = (props: any) => (
+  <Icon {...props}><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4h4"/></Icon>
+)
+export const IconTrash = (props: any) => (
+  <Icon {...props}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></Icon>
+)
 
