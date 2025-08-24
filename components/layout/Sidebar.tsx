@@ -5,20 +5,25 @@ import { useConversations } from '@/components/state/conversations'
 import { IconPlus as Plus, IconSearch as Search, IconClock as Clock, IconSettings as Settings } from '@/components/ui/icons'
 
 export default function Sidebar() {
-  const { conversations, activeId, createConversation, setActive, renameConversation, deleteConversation } = useConversations()
+  const { conversations, activeId, setActive, renameConversation, deleteConversation } = useConversations()
   const [query, setQuery] = React.useState('')
   const filtered = conversations.filter(c => (c.title || '').toLowerCase().includes(query.toLowerCase()))
 
   return (
     <aside className="hidden lg:flex lg:flex-col border-r bg-slate-50/60">
       <div className="p-3 border-b bg-white/60">
-        <button
-          onClick={() => createConversation()}
+        <a
+          href="/chat"
           className="group relative flex items-center gap-2 px-3 py-2 rounded-md text-slate-700 hover:bg-white hover:shadow-sm transition"
+          onClick={(e) => {
+            e.preventDefault()
+            setActive(null) // 进入空白会话
+            window.history.pushState({}, '', '/chat')
+          }}
         >
           <Plus size={16} className="text-slate-500 group-hover:text-slate-700" />
           <span className="text-sm">新会话</span>
-        </button>
+        </a>
       </div>
       <div className="p-3 space-y-2 flex-1 overflow-auto">
         <div className="px-3">
@@ -30,17 +35,18 @@ export default function Sidebar() {
         <div className="pt-2 text-xs uppercase tracking-wider text-slate-400 px-3">最近</div>
         <div className="space-y-1">
           {filtered.map((c) => (
-            <div key={c.id} className={`group relative flex items-center justify-between gap-2 px-3 py-2 rounded-md hover:bg-white hover:shadow-sm transition cursor-pointer ${activeId === c.id ? 'bg-white shadow-sm' : ''}`}>
-              <div className="flex items-center gap-2 min-w-0" onClick={() => setActive(c.id)}>
+            <div key={c.id} className={`group relative flex items-center justify-between gap-2 px-3 py-2 rounded-md hover:bg-white hover:shadow-sm transition ${activeId === c.id ? 'bg-white shadow-sm' : ''}`}>
+              <a href={`/chat/${c.id}`} className="flex items-center gap-2 min-w-0 flex-1" onClick={() => { setActive(c.id) }}>
                 <Clock size={16} className="text-slate-500 group-hover:text-slate-700" />
                 <span className="text-sm truncate">{c.title || '未命名会话'}</span>
-              </div>
+              </a>
               <div className="opacity-0 group-hover:opacity-100 transition flex items-center gap-1">
-                <button className="text-xs text-slate-500 hover:text-slate-700" onClick={() => {
+                <button className="text-xs text-slate-500 hover:text-slate-700" onClick={(ev) => {
+                  ev.preventDefault()
                   const t = prompt('重命名会话', c.title)
                   if (t != null) renameConversation(c.id, t)
                 }}>改名</button>
-                <button className="text-xs text-red-500 hover:text-red-600" onClick={() => deleteConversation(c.id)}>删除</button>
+                <button className="text-xs text-red-500 hover:text-red-600" onClick={(ev) => { ev.preventDefault(); deleteConversation(c.id) }}>删除</button>
               </div>
             </div>
           ))}

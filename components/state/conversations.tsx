@@ -17,7 +17,7 @@ export type ConversationsContextValue = {
   active: Conversation | null
   // actions
   createConversation: (title?: string) => Conversation
-  setActive: (id: string) => void
+  setActive: (id: string | null) => void
   renameConversation: (id: string, title: string) => void
   deleteConversation: (id: string) => void
   // message operations on active conversation
@@ -46,18 +46,11 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
       if (raw) {
         const parsed = JSON.parse(raw) as { conversations: Conversation[]; activeId: string | null }
         setConversations(parsed.conversations || [])
-        setActiveId(parsed.activeId || (parsed.conversations?.[0]?.id ?? null))
+        setActiveId(parsed.activeId ?? null)
       } else {
-        // initialize with an empty conversation
-        const conv: Conversation = {
-          id: genId(),
-          title: '新会话',
-          messages: [],
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-        }
-        setConversations([conv])
-        setActiveId(conv.id)
+        // 初始保持空列表与空激活，首页显示空白会话
+        setConversations([])
+        setActiveId(null)
       }
     } catch {}
   }, [])
@@ -78,7 +71,7 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
     return conv
   }
 
-  const setActive = (id: string) => {
+  const setActive = (id: string | null) => {
     setActiveId(id)
   }
 
