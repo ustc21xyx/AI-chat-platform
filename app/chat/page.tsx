@@ -3,10 +3,10 @@
 import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import MessageBubble from '@/components/chat/MessageBubble'
-import { Copy } from 'lucide-react'
+import { Copy, Send, Square } from 'lucide-react'
 import copy from 'copy-to-clipboard'
 
-type ChatMessage = {
+ type ChatMessage = {
   role: 'user' | 'assistant'
   content: string
 }
@@ -92,26 +92,35 @@ export default function ChatPage() {
         <Button variant="outline" onClick={copyAll} className="gap-2"><Copy size={16}/> 复制全部</Button>
       </div>
 
-      <div className="border rounded-lg p-3 min-h-[320px] bg-white">
-        {messages.length === 0 && (
-          <div className="text-slate-400">开始对话吧～</div>
-        )}
-        {messages.map((m, idx) => (
-          <MessageBubble key={idx} role={m.role} content={m.content} />
-        ))}
-      </div>
-
-      <div className="flex gap-2 mt-3">
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="输入你的问题..."
-          rows={3}
-          className="flex-1 p-3 border rounded-lg"
-        />
-        <div className="flex flex-col gap-2">
-          <Button onClick={handleSend} disabled={isStreaming}>发送</Button>
-          <Button onClick={handleStop} disabled={!isStreaming} variant="outline">停止</Button>
+      <div className="border rounded-xl min-h-[520px] bg-white overflow-hidden">
+        <div className="p-4 h-[420px] overflow-auto bg-slate-50/60">
+          {messages.length === 0 && (
+            <div className="text-slate-400">开始对话吧～</div>
+          )}
+          {messages.map((m, idx) => (
+            <MessageBubble key={idx} role={m.role} content={m.content} />
+          ))}
+        </div>
+        <div className="border-t p-3">
+          <div className="flex gap-2 items-start">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              placeholder="输入你的问题... (Enter 发送, Shift+Enter 换行)"
+              rows={3}
+              className="flex-1 p-3 border rounded-lg"
+            />
+            <div className="flex flex-col gap-2 w-28">
+              <Button onClick={handleSend} disabled={isStreaming} className="gap-2"><Send size={16}/> 发送</Button>
+              <Button onClick={handleStop} disabled={!isStreaming} variant="outline" className="gap-2"><Square size={16}/> 停止</Button>
+            </div>
+          </div>
         </div>
       </div>
     </main>
