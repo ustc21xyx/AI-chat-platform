@@ -2,6 +2,9 @@
 
 import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import MessageBubble from '@/components/chat/MessageBubble'
+import { Copy } from 'lucide-react'
+import copy from 'copy-to-clipboard'
 
 type ChatMessage = {
   role: 'user' | 'assistant'
@@ -55,12 +58,12 @@ export default function ChatPage() {
             const delta = JSON.parse(data) as { content?: string }
             const text = delta.content ?? ''
             setMessages(prev => {
-              const copy = [...prev]
-              const last = copy[copy.length - 1]
+              const copyArr = [...prev]
+              const last = copyArr[copyArr.length - 1]
               if (last && last.role === 'assistant') {
                 last.content += text
               }
-              return copy
+              return copyArr
             })
           } catch {}
         }
@@ -77,18 +80,24 @@ export default function ChatPage() {
     abortRef.current = null
   }
 
+  const copyAll = () => {
+    const text = messages.map(m => `${m.role === 'user' ? '你' : '助手'}：${m.content}`).join('\n')
+    copy(text)
+  }
+
   return (
     <main>
-      <h1 className="text-xl font-semibold mb-3">聊天</h1>
+      <div className="flex items-center justify-between mb-3">
+        <h1 className="text-xl font-semibold">聊天</h1>
+        <Button variant="outline" onClick={copyAll} className="gap-2"><Copy size={16}/> 复制全部</Button>
+      </div>
 
-      <div className="border rounded-lg p-3 min-h-[240px]">
+      <div className="border rounded-lg p-3 min-h-[320px] bg-white">
         {messages.length === 0 && (
           <div className="text-slate-400">开始对话吧～</div>
         )}
         {messages.map((m, idx) => (
-          <div key={idx} className="whitespace-pre-wrap py-1.5">
-            <b>{m.role === 'user' ? '你' : '助手'}：</b> {m.content}
-          </div>
+          <MessageBubble key={idx} role={m.role} content={m.content} />
         ))}
       </div>
 
@@ -98,7 +107,7 @@ export default function ChatPage() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="输入你的问题..."
           rows={3}
-          className="flex-1 p-2 border rounded-lg"
+          className="flex-1 p-3 border rounded-lg"
         />
         <div className="flex flex-col gap-2">
           <Button onClick={handleSend} disabled={isStreaming}>发送</Button>
