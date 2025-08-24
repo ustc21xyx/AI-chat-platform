@@ -6,3 +6,7 @@
 html, body { padding: 0; margin: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif; }
 
+.prose pre code { font-size: 13px; }
+.prose pre { border: 1px solid #e5e7eb; border-radius: 10px; }
+.prose table { display: block; overflow-x: auto; }
+

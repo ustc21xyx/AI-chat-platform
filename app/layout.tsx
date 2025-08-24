@@ -14,11 +14,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN">
-      <body className="min-h-screen bg-white text-slate-800">
-        <header className="border-b sticky top-0 bg-white/70 backdrop-blur z-50">
+      <body className="min-h-screen bg-[#f7f7f8] text-slate-800">
+        <header className="border-b sticky top-0 bg-white/80 backdrop-blur z-50">
           <div className="max-w-[1200px] mx-auto px-4 py-3 font-medium flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500" />
+              <span className="inline-block w-2.5 h-2.5 rounded-full bg-slate-400" />
               中文AI聊天公益平台
             </div>
             <div className="text-sm text-slate-500">兼容 OpenAI API · 多提供商</div>
@@ -26,7 +26,7 @@ export default function RootLayout({
         </header>
         <div className="max-w-[1200px] mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)] gap-6">
           <Sidebar />
-          <main>
+          <main className="mx-auto w-full max-w-[820px]">
             {children}
           </main>
         </div>

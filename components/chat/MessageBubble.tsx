@@ -4,7 +4,7 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
-import 'highlight.js/styles/github-dark.css'
+import 'highlight.js/styles/github.css'
 
 type Props = {
   role: 'user' | 'assistant'
@@ -14,9 +14,16 @@ type Props = {
 export default function MessageBubble({ role, content }: Props) {
   const isUser = role === 'user'
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} my-2`}>
-      <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm leading-6 shadow ${isUser ? 'bg-slate-900 text-white' : 'bg-slate-50 border'}`}>
-        <ReactMarkdown remarkPlugins={[remarkGfm as any]} rehypePlugins={[rehypeHighlight as any]}>{content || '…'}</ReactMarkdown>
+    <div className="flex gap-3 py-3">
+      <div className="w-8 h-8 rounded-md bg-slate-200 flex items-center justify-center text-slate-600 text-xs select-none">
+        {isUser ? '你' : 'AI'}
+      </div>
+      <div className="flex-1">
+        <div className="prose prose-slate max-w-none text-slate-800 text-[15px] leading-7">
+          <ReactMarkdown remarkPlugins={[remarkGfm as any]} rehypePlugins={[rehypeHighlight as any]}>
+            {content || '…'}
+          </ReactMarkdown>
+        </div>
       </div>
     </div>
   )
