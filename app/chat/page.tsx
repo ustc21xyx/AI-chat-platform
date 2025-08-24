@@ -4,18 +4,16 @@ import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import MessageBubble from '@/components/chat/MessageBubble'
 import { IconCopy as Copy, IconSend as Send, IconStop as Square } from '@/components/ui/icons'
+import { useConversations, type ChatMessage } from '@/components/state/conversations'
 
- type ChatMessage = {
-  role: 'user' | 'assistant'
-  content: string
-}
 
 const copyText = async (text: string) => {
   try { await navigator.clipboard.writeText(text) } catch {}
 }
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const { active, setMessagesForActive, appendToLastAssistant, pushMessage } = useConversations()
+  const messages = active?.messages ?? []
   const [input, setInput] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
   const abortRef = useRef<AbortController | null>(null)
@@ -55,14 +53,7 @@ export default function ChatPage() {
           try {
             const delta = JSON.parse(data) as { content?: string }
             const text = delta.content ?? ''
-            setMessages(prev => {
-              const copyArr = [...prev]
-              const last = copyArr[copyArr.length - 1]
-              if (last && last.role === 'assistant') {
-                last.content += text
-              }
-              return copyArr
-            })
+            appendToLastAssistant(text)
           } catch {}
         }
       }
@@ -76,7 +67,7 @@ export default function ChatPage() {
     if (!input.trim() || isStreaming) return
     const userMsg: ChatMessage = { role: 'user', content: input }
     const base = [...messages, userMsg]
-    setMessages([...base, { role: 'assistant', content: '' }])
+    setMessagesForActive([...base, { role: 'assistant', content: '' }])
     setInput('')
     streamFrom(base)
   }
@@ -114,14 +105,14 @@ export default function ChatPage() {
                 if (m.role === 'assistant') {
                   const until = messages.slice(0, idx)
                   // 不回填输入框，直接基于上下文重新流式
-                  setMessages([...until, { role: 'assistant', content: '' }])
+                  setMessagesForActive([...until, { role: 'assistant', content: '' }])
                   streamFrom(until)
                 }
               }}
               onDelete={() => {
                 const cp = [...messages]
                 cp.splice(idx,1)
-                setMessages(cp)
+                setMessagesForActive(cp)
               }}
             />
           ))}

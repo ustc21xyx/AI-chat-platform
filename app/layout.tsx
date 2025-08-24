@@ -1,6 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import Sidebar from '@/components/layout/Sidebar'
+import { ConversationsProvider } from '@/components/state/conversations'
 
 export const metadata: Metadata = {
   title: '中文AI聊天公益平台',
@@ -24,12 +25,14 @@ export default function RootLayout({
             <div className="text-sm text-slate-500">兼容 OpenAI API · 多提供商</div>
           </div>
         </header>
-        <div className="max-w-[1200px] mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)] gap-6">
-          <Sidebar />
-          <main className="mx-auto w-full max-w-[820px]">
-            {children}
-          </main>
-        </div>
+        <ConversationsProvider>
+          <div className="max-w-[1200px] mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)] gap-6">
+            <Sidebar />
+            <main className="mx-auto w-full max-w-[820px]">
+              {children}
+            </main>
+          </div>
+        </ConversationsProvider>
       </body>
     </html>
   )
