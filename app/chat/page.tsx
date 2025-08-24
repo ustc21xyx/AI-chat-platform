@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import MessageBubble from '@/components/chat/MessageBubble'
 import { IconCopy as Copy, IconSend as Send, IconStop as Square } from '@/components/ui/icons'
@@ -17,6 +17,17 @@ export default function ChatPage() {
   const [input, setInput] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
   const abortRef = useRef<AbortController | null>(null)
+
+
+  // 首次用户消息进入后命名（只看第一条用户消息）
+  useEffect(() => {
+    if (!active) return
+    const need = !active.title || active.title === '新会话'
+    const hasUser = (messages || []).some(m => m.role === 'user')
+    if (need && hasUser) {
+      generateTitleForActive()
+    }
+  }, [active?.id, messages.length])
 
   const streamFrom = async (base: ChatMessage[]) => {
     setIsStreaming(true)
@@ -69,8 +80,6 @@ export default function ChatPage() {
     const base = [...messages, userMsg]
     setMessagesForActive([...base, { role: 'assistant', content: '' }])
     setInput('')
-    // 发送后若标题仍为默认，自动生成一个
-    setTimeout(() => generateTitleForActive(), 0)
     streamFrom(base)
   }
 

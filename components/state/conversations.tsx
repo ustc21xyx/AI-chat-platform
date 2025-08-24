@@ -124,9 +124,9 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
 
   async function generateTitleForActive() {
     if (!active) return
-    // 简易自动命名：取最近一条用户消息的前20字
-    const lastUser = [...(active.messages || [])].reverse().find(m => m.role === 'user')
-    const fallback = lastUser ? lastUser.content.trim().slice(0, 20) : '新会话'
+    // 规则：只取第一条“用户”消息的前 20 个字符
+    const firstUser = (active.messages || []).find(m => m.role === 'user')
+    const fallback = firstUser ? firstUser.content.trim().slice(0, 20) : '新会话'
 
     // 预留：管理员可接入后端/模型生成标题
     // try {
