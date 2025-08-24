@@ -1,10 +1,13 @@
 "use client"
 
+import React from 'react'
 import { useConversations } from '@/components/state/conversations'
 import { IconPlus as Plus, IconSearch as Search, IconClock as Clock, IconSettings as Settings } from '@/components/ui/icons'
 
 export default function Sidebar() {
   const { conversations, activeId, createConversation, setActive, renameConversation, deleteConversation } = useConversations()
+  const [query, setQuery] = React.useState('')
+  const filtered = conversations.filter(c => (c.title || '').toLowerCase().includes(query.toLowerCase()))
 
   return (
     <aside className="hidden lg:flex lg:flex-col border-r bg-slate-50/60">
@@ -21,12 +24,12 @@ export default function Sidebar() {
         <div className="px-3">
           <div className="flex items-center gap-2 rounded-md bg-white border px-2 py-1.5 text-slate-500">
             <Search size={14} />
-            <input placeholder="搜索" className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400" />
+            <input placeholder="搜索会话" className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400" onChange={(e)=> setQuery(e.target.value)} />
           </div>
         </div>
         <div className="pt-2 text-xs uppercase tracking-wider text-slate-400 px-3">最近</div>
         <div className="space-y-1">
-          {conversations.map((c) => (
+          {filtered.map((c) => (
             <div key={c.id} className={`group relative flex items-center justify-between gap-2 px-3 py-2 rounded-md hover:bg-white hover:shadow-sm transition cursor-pointer ${activeId === c.id ? 'bg-white shadow-sm' : ''}`}>
               <div className="flex items-center gap-2 min-w-0" onClick={() => setActive(c.id)}>
                 <Clock size={16} className="text-slate-500 group-hover:text-slate-700" />

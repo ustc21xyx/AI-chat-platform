@@ -12,7 +12,7 @@ const copyText = async (text: string) => {
 }
 
 export default function ChatPage() {
-  const { active, setMessagesForActive, appendToLastAssistant, pushMessage } = useConversations()
+  const { active, setMessagesForActive, appendToLastAssistant, generateTitleForActive } = useConversations()
   const messages = active?.messages ?? []
   const [input, setInput] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
@@ -69,6 +69,8 @@ export default function ChatPage() {
     const base = [...messages, userMsg]
     setMessagesForActive([...base, { role: 'assistant', content: '' }])
     setInput('')
+    // 发送后若标题仍为默认，自动生成一个
+    setTimeout(() => generateTitleForActive(), 0)
     streamFrom(base)
   }
 

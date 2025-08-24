@@ -24,6 +24,8 @@ export type ConversationsContextValue = {
   setMessagesForActive: (messages: ChatMessage[]) => void
   pushMessage: (msg: ChatMessage) => void
   appendToLastAssistant: (delta: string) => void
+  // title generation
+  generateTitleForActive: () => Promise<void>
 }
 
 const ConversationsContext = createContext<ConversationsContextValue | null>(null)
@@ -120,6 +122,24 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
     )
   }
 
+  async function generateTitleForActive() {
+    if (!active) return
+    // 简易自动命名：取最近一条用户消息的前20字
+    const lastUser = [...(active.messages || [])].reverse().find(m => m.role === 'user')
+    const fallback = lastUser ? lastUser.content.trim().slice(0, 20) : '新会话'
+
+    // 预留：管理员可接入后端/模型生成标题
+    // try {
+    //   const res = await fetch('/api/admin/generate-title', { method: 'POST', body: JSON.stringify({ messages: active.messages }) })
+    //   const { title } = await res.json()
+    //   if (title) { renameConversation(active.id, title) ; return }
+    // } catch {}
+
+    if (!active.title || active.title === '新会话') {
+      renameConversation(active.id, fallback)
+    }
+  }
+
   const value: ConversationsContextValue = {
     conversations,
     activeId,
@@ -131,6 +151,7 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
     setMessagesForActive,
     pushMessage,
     appendToLastAssistant,
+    generateTitleForActive,
   }
 
   return <ConversationsContext.Provider value={value}>{children}</ConversationsContext.Provider>
