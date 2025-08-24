@@ -15,6 +15,7 @@ export type ConversationsContextValue = {
   conversations: Conversation[]
   activeId: string | null
   active: Conversation | null
+  isReady: boolean
   // actions
   createConversation: (title?: string) => Conversation
   setActive: (id: string | null) => void
@@ -37,6 +38,8 @@ function genId() {
 
 export function ConversationsProvider({ children }: { children: React.ReactNode }) {
   const [conversations, setConversations] = useState<Conversation[]>([])
+  const [isReady, setIsReady] = useState(false)
+
   const [activeId, setActiveId] = useState<string | null>(null)
 
   // load
@@ -52,6 +55,7 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
         setConversations([])
         setActiveId(null)
       }
+      setIsReady(true)
     } catch {}
   }, [])
 
@@ -137,6 +141,7 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
     conversations,
     activeId,
     active,
+    isReady,
     createConversation,
     setActive,
     renameConversation,

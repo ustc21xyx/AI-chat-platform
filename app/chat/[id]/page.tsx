@@ -14,19 +14,18 @@ const copyText = async (text: string) => {
 export default function ChatPageById() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const { conversations, active, setActive, setMessagesForActive, appendToLastAssistant, createConversation, generateTitleForActive } = useConversations()
+  const { conversations, active, isReady, setActive, setMessagesForActive, appendToLastAssistant, generateTitleForActive } = useConversations()
 
-  // 确保根据 URL 同步激活会话；若不存在则创建并跳转新 ID
+  // 根据 URL 同步激活；若 id 不存在且数据已加载，则回到空白会话（不自动创建）
   useEffect(() => {
-    if (!id) return
+    if (!id || !isReady) return
     const exists = conversations.some(c => c.id === id)
     if (exists) {
       if (active?.id !== id) setActive(id)
     } else {
-      const conv = createConversation()
-      router.replace(`/chat/${conv.id}`)
+      router.replace('/chat')
     }
-  }, [id])
+  }, [id, isReady, conversations.length, active?.id])
 
   const messages = active?.messages ?? []
   const [input, setInput] = useState('')
