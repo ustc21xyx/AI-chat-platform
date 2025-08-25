@@ -16,16 +16,17 @@ export default function ChatPageById() {
   const router = useRouter()
   const { conversations, active, isReady, setActive, setMessagesForActive, appendToLastAssistant, generateTitleForActive } = useConversations()
 
-  // 根据 URL 同步激活；若 id 不存在且数据已加载，则回到空白会话（不自动创建）
+  // 强制同步：URL 的 id 必须与 active 一致，避免"已在深链但显示空白"
   useEffect(() => {
     if (!id || !isReady) return
     const exists = conversations.some(c => c.id === id)
     if (exists) {
-      if (active?.id !== id) setActive(id)
+      // 无论 active 是什么，都强制切到 URL 对应的会话
+      setActive(id)
     } else {
       router.replace('/chat')
     }
-  }, [id, isReady, conversations.length, active?.id])
+  }, [id, isReady, conversations.length])
 
 
   // 若刚创建还未可见，短暂重试一次，避免误回空白页

@@ -21,8 +21,9 @@ export type ConversationsContextValue = {
   setActive: (id: string | null) => void
   renameConversation: (id: string, title: string) => void
   deleteConversation: (id: string) => void
-  // message operations on active conversation
+  // message operations
   setMessagesForActive: (messages: ChatMessage[]) => void
+  setMessagesById: (id: string, messages: ChatMessage[]) => void
   pushMessage: (msg: ChatMessage) => void
   appendToLastAssistant: (delta: string) => void
   // title generation
@@ -107,6 +108,10 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
     setConversations(prev => prev.map(c => (c.id === active.id ? { ...c, messages: [...c.messages, msg], updatedAt: Date.now() } : c)))
   }
 
+  const setMessagesById = (id: string, messages: ChatMessage[]) => {
+    setConversations(prev => prev.map(c => (c.id === id ? { ...c, messages, updatedAt: Date.now() } : c)))
+  }
+
   const appendToLastAssistant = (delta: string) => {
     if (!active) return
     setConversations(prev =>
@@ -150,6 +155,7 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
     renameConversation,
     deleteConversation,
     setMessagesForActive,
+    setMessagesById,
     pushMessage,
     appendToLastAssistant,
     generateTitleForActive,
