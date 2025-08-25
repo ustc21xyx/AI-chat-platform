@@ -55,14 +55,17 @@ export default function ChatPage() {
     }
   }
 
-  const ensureRealConversation = () => {
-    // 创建真实会话，把 tempMessages 灌入 Provider 并设为 active，并无感跳转到深链
+  const ensureRealConversation = (base: ChatMessage[]) => {
+    // 创建真实会话，把 base（含首条用户消息）灌入 Provider，并无感跳转到深链
     const conv = createConversation()
-    // 同步刷新 activeId，降低路由与状态的竞态
+    // Provider 中写入：base + 助手空占位
+    const withAssistant: ChatMessage[] = [...base, { role: 'assistant', content: '' } as ChatMessage]
     flushSync(() => {
       setActive(conv.id)
-      setMessagesById(conv.id, tempMessages)
+      setMessagesById(conv.id, withAssistant)
     })
+    // 将待流式的 base 暂存，交给深链页启动流式
+    try { sessionStorage.setItem('pendingStream', JSON.stringify({ id: conv.id, base })) } catch {}
     // 触发命名（基于第一条用户消息）
     setTimeout(() => generateTitleForActive(), 0)
     router.replace(`/chat/${conv.id}`)
@@ -76,8 +79,8 @@ export default function ChatPage() {
     setTempMessages([...base, { role: 'assistant', content: '' }])
     setInput('')
     // 首次发送时，创建“真实会话”并把当前临时消息同步进去
-    ensureRealConversation()
-    streamFrom(base)
+    ensureRealConversation(base)
+    // 不在 /chat 页进行流式，交由深链页根据 pendingStream 继续
   }
 
   const handleStop = () => { abortRef.current?.abort(); setIsStreaming(false); abortRef.current = null }

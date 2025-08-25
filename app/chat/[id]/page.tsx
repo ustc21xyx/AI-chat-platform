@@ -98,6 +98,24 @@ export default function ChatPageById() {
       }
     } catch (e) {
       setIsStreaming(false)
+  // 处理从 /chat 带过来的首发 pendingStream（包含 base，不包含助手空占位）
+  useEffect(() => {
+    if (!isReady || !active?.id) return
+    try {
+      const raw = sessionStorage.getItem('pendingStream')
+      if (!raw) return
+      const ps = JSON.parse(raw) as { id: string; base: ChatMessage[] }
+      if (ps.id !== active.id) return
+      // 确保助手空占位存在
+      if (!active.messages.find(m => m.role === 'assistant')) {
+        setMessagesForActive([...ps.base, { role: 'assistant', content: '' }])
+      }
+      sessionStorage.removeItem('pendingStream')
+      // 立即启动流式
+      streamFrom(ps.base)
+    } catch {}
+  }, [isReady, active?.id])
+
       abortRef.current = null
     }
   }
