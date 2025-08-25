@@ -3,11 +3,13 @@ import { NextRequest } from 'next/server'
 export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest) {
+  const { messages, config } = await req.json()
   const encoder = new TextEncoder()
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      const chunks = ['你好', '，', '这是', '一个', '演示', '流式', '输出', '。']
+      const header = config?.model ? `（模型：${config.model}）` : ''
+      const chunks = ['你好', header, '，', '这是', '一个', '演示', '流式', '输出', '。']
       for (const part of chunks) {
         const payload = JSON.stringify({ content: part })
         controller.enqueue(encoder.encode(`data: ${payload}\n\n`))

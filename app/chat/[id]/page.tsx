@@ -67,7 +67,7 @@ export default function ChatPageById() {
       const res = await fetch('/api/mock-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: base }),
+        body: JSON.stringify({ messages: base, config: active?.config }),
         signal: controller.signal,
       })
 
