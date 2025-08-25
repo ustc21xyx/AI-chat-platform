@@ -24,9 +24,10 @@ function keyForEnv() {
 }
 
 export async function GET(req: NextRequest) {
+  const url = new URL(req.url)
+  const all = url.searchParams.get('all')
   const data = (await kv.get<AdminModels>(keyForEnv())) || FALLBACK
-  // 只返回启用的模型
-  const models = (data.models || []).filter(m => m.enabled !== false)
+  const models = all ? (data.models || []) : (data.models || []).filter(m => m.enabled !== false)
   return Response.json({ models, defaults: data.defaults || FALLBACK.defaults })
 }
 
