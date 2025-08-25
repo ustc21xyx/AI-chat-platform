@@ -9,7 +9,7 @@ type AdminModels = {
 }
 
 type PublicModel = { id: string; label: string; provider: string; value: string; sort?: number }
-unction keyForModels() { const env = process.env.VERCEL_ENV || process.env.NODE_ENV || 'development'; return `admin:models:${env}` }
+function keyForModels() { const env = process.env.VERCEL_ENV || process.env.NODE_ENV || 'development'; return `admin:models:${env}` }
 
 export async function GET(req: NextRequest) {
   const data = (await kv.get<AdminModels>(keyForModels())) || { models: [], defaults: {} }
