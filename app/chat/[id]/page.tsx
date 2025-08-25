@@ -110,23 +110,7 @@ export default function ChatPageById() {
     }
   }
 
-  // 处理从 /chat 带过来的首发 pendingStream（包含 base，不包含助手空占位）
-  useEffect(() => {
-    if (!isReady || !active?.id) return
-    try {
-      const raw = sessionStorage.getItem('pendingStream')
-      if (!raw) return
-      const ps = JSON.parse(raw) as { id: string; base: ChatMessage[] }
-      if (ps.id !== active.id) return
-      // 确保助手空占位存在
-      if (!active.messages.find(m => m.role === 'assistant')) {
-        setMessagesForActive([...ps.base, { role: 'assistant', content: '' }])
-      }
-      sessionStorage.removeItem('pendingStream')
-      // 立即启动流式
-      streamFrom(ps.base)
-    } catch {}
-  // 如果从 /chat 带来预选模型，应用到当前会话配置
+  // 处理从 /chat 带过来的首发 pendingStream（包含 base；可选预选模型）
   useEffect(() => {
     if (!isReady || !active?.id) return
     try {
@@ -134,10 +118,16 @@ export default function ChatPageById() {
       if (!raw) return
       const ps = JSON.parse(raw) as { id: string; base: ChatMessage[]; config?: { model?: string } }
       if (ps.id !== active.id) return
+      // 确保助手空占位存在
+      if (!active.messages.find(m => m.role === 'assistant')) {
+        setMessagesForActive([...ps.base, { role: 'assistant', content: '' }])
+      }
+      // 应用预选模型
       if (ps.config?.model) setConfigForActive({ model: ps.config.model })
+      // 清理并立即启动流式
+      sessionStorage.removeItem('pendingStream')
+      streamFrom(ps.base)
     } catch {}
-  }, [isReady, active?.id])
-
   }, [isReady, active?.id])
 
   const handleSend = async () => {

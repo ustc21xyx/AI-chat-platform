@@ -99,13 +99,10 @@ export default function ChatPage() {
     <main>
       <div className="flex items-center justify-between mb-3">
         <h1 className="text-xl font-semibold">聊天</h1>
-
-          {/* 预选模型（未创建会话前） */}
-          <div className="px-4 pt-3">
-            <ModelSelector value={preModel} onChange={setPreModel} />
-          </div>
-
-        <Button variant="outline" onClick={copyAll} className="gap-2"><Copy size={16}/> 复制全部</Button>
+        <div className="flex items-center gap-3">
+          <ModelSelector value={preModel} onChange={setPreModel} />
+          <Button variant="outline" onClick={copyAll} className="gap-2"><Copy size={16}/> 复制全部</Button>
+        </div>
       </div>
 
       <div className="border rounded-xl min-h-[520px] bg-white overflow-hidden">
