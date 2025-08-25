@@ -26,6 +26,7 @@ export type ConversationsContextValue = {
   setMessagesById: (id: string, messages: ChatMessage[]) => void
   pushMessage: (msg: ChatMessage) => void
   appendToLastAssistant: (delta: string) => void
+  appendToLastAssistantById: (id: string, delta: string) => void
   // title generation
   generateTitleForActive: () => Promise<void>
 }
@@ -127,6 +128,20 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
     )
   }
 
+  const appendToLastAssistantById = (id: string, delta: string) => {
+    setConversations(prev =>
+      prev.map(c => {
+        if (c.id !== id) return c
+        const msgs = [...c.messages]
+        const last = msgs[msgs.length - 1]
+        if (last && last.role === 'assistant') {
+          msgs[msgs.length - 1] = { ...last, content: last.content + delta }
+        }
+        return { ...c, messages: msgs, updatedAt: Date.now() }
+      })
+    )
+  }
+
   async function generateTitleForActive() {
     if (!active) return
     // 规则：只取第一条“用户”消息的前 20 个字符
@@ -158,6 +173,7 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
     setMessagesById,
     pushMessage,
     appendToLastAssistant,
+    appendToLastAssistantById,
     generateTitleForActive,
   }
 

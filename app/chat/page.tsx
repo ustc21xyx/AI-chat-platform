@@ -11,7 +11,7 @@ import { useConversations, type ChatMessage } from '@/components/state/conversat
 const copyText = async (text: string) => { try { await navigator.clipboard.writeText(text) } catch {} }
 
 export default function ChatPage() {
-  const { createConversation, setActive, setMessagesForActive, generateTitleForActive } = useConversations()
+  const { createConversation, setActive, setMessagesById, generateTitleForActive } = useConversations()
   const router = useRouter()
   // 临时消息：未入库的“空白会话”内容
   const [tempMessages, setTempMessages] = useState<ChatMessage[]>([])
@@ -61,7 +61,7 @@ export default function ChatPage() {
     // 同步刷新 activeId，降低路由与状态的竞态
     flushSync(() => {
       setActive(conv.id)
-      setMessagesForActive(tempMessages)
+      setMessagesById(conv.id, tempMessages)
     })
     // 触发命名（基于第一条用户消息）
     setTimeout(() => generateTitleForActive(), 0)
