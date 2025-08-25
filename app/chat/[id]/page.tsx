@@ -15,7 +15,7 @@ const copyText = async (text: string) => {
 export default function ChatPageById() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const { conversations, active, isReady, setActive, setMessagesForActive, appendToLastAssistant, generateTitleForActive } = useConversations()
+  const { conversations, active, isReady, setActive, setMessagesForActive, appendToLastAssistant, generateTitleForActive, setConfigForActive } = useConversations()
 
   // 强制同步：URL 的 id 必须与 active 一致，避免"已在深链但显示空白"
   useEffect(() => {
@@ -126,6 +126,18 @@ export default function ChatPageById() {
       // 立即启动流式
       streamFrom(ps.base)
     } catch {}
+  // 如果从 /chat 带来预选模型，应用到当前会话配置
+  useEffect(() => {
+    if (!isReady || !active?.id) return
+    try {
+      const raw = sessionStorage.getItem('pendingStream')
+      if (!raw) return
+      const ps = JSON.parse(raw) as { id: string; base: ChatMessage[]; config?: { model?: string } }
+      if (ps.id !== active.id) return
+      if (ps.config?.model) setConfigForActive({ model: ps.config.model })
+    } catch {}
+  }, [isReady, active?.id])
+
   }, [isReady, active?.id])
 
   const handleSend = async () => {

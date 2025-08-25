@@ -5,6 +5,7 @@ import { flushSync } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import MessageBubble from '@/components/chat/MessageBubble'
+import ModelSelector from '@/components/chat/ModelSelector'
 import { IconCopy as Copy, IconSend as Send, IconStop as Square } from '@/components/ui/icons'
 import { useConversations, type ChatMessage } from '@/components/state/conversations'
 
@@ -20,6 +21,8 @@ export default function ChatPage() {
 
   const [input, setInput] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
+  const [preModel, setPreModel] = useState('')
+
   const abortRef = useRef<AbortController | null>(null)
 
   const streamFrom = async (base: ChatMessage[]) => {
@@ -60,12 +63,14 @@ export default function ChatPage() {
     const conv = createConversation()
     // Provider 中写入：base + 助手空占位
     const withAssistant: ChatMessage[] = [...base, { role: 'assistant', content: '' } as ChatMessage]
+    // 如果预选了模型，把它写入会话配置
+    // 预选模型记录到 pendingStream，由深链页应用
     flushSync(() => {
       setActive(conv.id)
       setMessagesById(conv.id, withAssistant)
     })
-    // 将待流式的 base 暂存，交给深链页启动流式
-    try { sessionStorage.setItem('pendingStream', JSON.stringify({ id: conv.id, base })) } catch {}
+    // 将待流式的 base 暂存，交给深链页启动流式，并带上预选模型
+    try { sessionStorage.setItem('pendingStream', JSON.stringify({ id: conv.id, base, config: preModel ? { model: preModel } : undefined })) } catch {}
     // 触发命名（基于第一条用户消息）
     setTimeout(() => generateTitleForActive(), 0)
     router.replace(`/chat/${conv.id}`)
@@ -94,6 +99,12 @@ export default function ChatPage() {
     <main>
       <div className="flex items-center justify-between mb-3">
         <h1 className="text-xl font-semibold">聊天</h1>
+
+          {/* 预选模型（未创建会话前） */}
+          <div className="px-4 pt-3">
+            <ModelSelector value={preModel} onChange={setPreModel} />
+          </div>
+
         <Button variant="outline" onClick={copyAll} className="gap-2"><Copy size={16}/> 复制全部</Button>
       </div>
 
