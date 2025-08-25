@@ -79,11 +79,11 @@ export default function ChatPageById() {
         const { done, value } = await reader.read()
         if (done) break
         const chunk = decoder.decode(value, { stream: true })
-        const lines = chunk.split('\n')
+        const lines = chunk.split('\\n')
         for (const line of lines) {
           const trimmed = line.trim()
           if (!trimmed.startsWith('data:')) continue
-          const data = trimmed.replace(/^data:\s*/, '')
+          const data = trimmed.replace(/^data:\\s*/, '')
           if (data === '[DONE]') {
             setIsStreaming(false)
             abortRef.current = null
@@ -96,8 +96,14 @@ export default function ChatPageById() {
           } catch {}
         }
       }
+      setIsStreaming(false)
+      abortRef.current = null
     } catch (e) {
       setIsStreaming(false)
+      abortRef.current = null
+    }
+  }
+
   // 处理从 /chat 带过来的首发 pendingStream（包含 base，不包含助手空占位）
   useEffect(() => {
     if (!isReady || !active?.id) return
@@ -115,10 +121,6 @@ export default function ChatPageById() {
       streamFrom(ps.base)
     } catch {}
   }, [isReady, active?.id])
-
-      abortRef.current = null
-    }
-  }
 
   const handleSend = async () => {
     if (!input.trim() || isStreaming) return
