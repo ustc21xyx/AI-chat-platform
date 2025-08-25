@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import MessageBubble from '@/components/chat/MessageBubble'
 import ModelSelector from '@/components/chat/ModelSelector'
@@ -145,9 +145,6 @@ export default function ChatPageById() {
 
   const copyAll = async () => {
     const text = messages.map(m => `${m.role === 'user' ? '你' : '助手'}：${m.content}`).join('\n')
-              <div className="mb-2 text-sm text-slate-500">
-                <ModelSelector />
-              </div>
 
     try { await navigator.clipboard.writeText(text) } catch {}
   }
