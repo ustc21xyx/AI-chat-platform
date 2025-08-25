@@ -13,14 +13,13 @@ export function middleware(req: NextRequest) {
   const protect = pathname.startsWith('/admin') || pathname.startsWith('/api/admin')
   if (!protect) return NextResponse.next()
 
-  const user = process.env.ADMIN_BASIC_USER
-  const pass = process.env.ADMIN_BASIC_PASS
-  const isProd = process.env.NODE_ENV === 'production'
+  let user = process.env.ADMIN_BASIC_USER
+  let pass = process.env.ADMIN_BASIC_PASS
 
-  // In production, require credentials to be set; in dev, allow pass-through if not set
+  // If not configured, fall back to admin/admin for convenience
   if (!user || !pass) {
-    if (isProd) return unauthorized()
-    return NextResponse.next()
+    user = 'admin'
+    pass = 'admin'
   }
 
   const auth = req.headers.get('authorization') || req.headers.get('Authorization')
