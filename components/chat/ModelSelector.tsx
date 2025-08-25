@@ -10,12 +10,14 @@ type Props = {
   disabled?: boolean
 }
 
+type PublicModel = { id: string; label: string }
+
 export default function ModelSelector({ value, onChange, disabled }: Props) {
   const { active, setConfigForActive } = useConversations()
-  const [models, setModels] = useState<{ provider: string; value: string; label: string }[]>([])
+  const [models, setModels] = useState<PublicModel[]>([])
 
   useEffect(() => {
-    fetch('/api/admin/models').then(r => r.json()).then(d => setModels(d.models || [])).catch(()=>setModels([]))
+    fetch('/api/models').then(r => r.json()).then(d => setModels(d.models || [])).catch(()=>setModels([]))
   }, [])
 
   const current = value ?? (active?.config?.model || '')
@@ -36,7 +38,7 @@ export default function ModelSelector({ value, onChange, disabled }: Props) {
       >
         <option value="">系统默认</option>
         {models.map(m => (
-          <option key={m.value} value={m.value}>{m.label}</option>
+          <option key={m.id} value={m.id}>{m.label}</option>
         ))}
       </select>
     </div>

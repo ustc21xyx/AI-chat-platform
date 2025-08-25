@@ -30,7 +30,7 @@ export default function ChatPage() {
     const controller = new AbortController()
     abortRef.current = controller
     try {
-      const res = await fetch('/api/mock-chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: base }), signal: controller.signal })
+      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: base, model: preModel || undefined, stream: true }), signal: controller.signal })
       if (!res.ok || !res.body) throw new Error('网络错误')
       const reader = res.body.getReader(); const decoder = new TextDecoder('utf-8')
       while (true) {

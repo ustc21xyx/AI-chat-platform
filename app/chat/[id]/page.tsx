@@ -64,10 +64,10 @@ export default function ChatPageById() {
     abortRef.current = controller
 
     try {
-      const res = await fetch('/api/mock-chat', {
+      const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: base, config: active?.config }),
+        body: JSON.stringify({ messages: base, model: active?.config?.model, temperature: active?.config?.temperature, max_tokens: active?.config?.maxTokens, stream: true }),
         signal: controller.signal,
       })
 
