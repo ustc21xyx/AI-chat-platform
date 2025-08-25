@@ -79,11 +79,14 @@ export default function ChatPageById() {
         const { done, value } = await reader.read()
         if (done) break
         const chunk = decoder.decode(value, { stream: true })
-        const lines = chunk.split('\\n')
+        const lines = chunk.split('\n')
+        // 调试：输出解析到的行数和首行（仅开发环境使用）
+        try { if (process.env.NODE_ENV !== 'production') console.log('[SSE chunk]', { linesCount: lines.length, first: lines[0] }) } catch {}
         for (const line of lines) {
           const trimmed = line.trim()
           if (!trimmed.startsWith('data:')) continue
-          const data = trimmed.replace(/^data:\\s*/, '')
+          const data = trimmed.replace(/^data:\s*/, '')
+          try { if (process.env.NODE_ENV !== 'production') console.log('[SSE data]', data) } catch {}
           if (data === '[DONE]') {
             setIsStreaming(false)
             abortRef.current = null
@@ -93,7 +96,9 @@ export default function ChatPageById() {
             const delta = JSON.parse(data) as { content?: string }
             const text = delta.content ?? ''
             appendToLastAssistant(text)
-          } catch {}
+          } catch (err) {
+            try { if (process.env.NODE_ENV !== 'production') console.warn('[SSE parse error]', err) } catch {}
+          }
         }
       }
       setIsStreaming(false)
