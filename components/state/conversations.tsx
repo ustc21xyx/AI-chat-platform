@@ -3,12 +3,18 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 export type ChatMessage = { role: 'user' | 'assistant'; content: string }
+export type ChatConfig = {
+  model?: string
+  temperature?: number
+  maxTokens?: number
+}
 export type Conversation = {
   id: string
   title: string
   messages: ChatMessage[]
   createdAt: number
   updatedAt: number
+  config?: ChatConfig
 }
 
 export type ConversationsContextValue = {
@@ -27,6 +33,8 @@ export type ConversationsContextValue = {
   pushMessage: (msg: ChatMessage) => void
   appendToLastAssistant: (delta: string) => void
   appendToLastAssistantById: (id: string, delta: string) => void
+  // config operations
+  setConfigForActive: (partial: ChatConfig) => void
   // title generation
   generateTitleForActive: () => Promise<void>
 }
@@ -160,6 +168,11 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
     }
   }
 
+  const setConfigForActive = (partial: ChatConfig) => {
+    if (!active) return
+    setConversations(prev => prev.map(c => (c.id === active.id ? { ...c, config: { ...c.config, ...partial }, updatedAt: Date.now() } : c)))
+  }
+
   const value: ConversationsContextValue = {
     conversations,
     activeId,
@@ -174,6 +187,7 @@ export function ConversationsProvider({ children }: { children: React.ReactNode 
     pushMessage,
     appendToLastAssistant,
     appendToLastAssistantById,
+    setConfigForActive,
     generateTitleForActive,
   }
 

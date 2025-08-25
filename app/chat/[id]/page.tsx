@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import MessageBubble from '@/components/chat/MessageBubble'
+import ModelSelector from '@/components/chat/ModelSelector'
 import { IconCopy as Copy, IconSend as Send, IconStop as Square } from '@/components/ui/icons'
 import { useConversations, type ChatMessage } from '@/components/state/conversations'
 import { useParams, useRouter } from 'next/navigation'
@@ -144,6 +145,10 @@ export default function ChatPageById() {
 
   const copyAll = async () => {
     const text = messages.map(m => `${m.role === 'user' ? '你' : '助手'}：${m.content}`).join('\n')
+              <div className="mb-2 text-sm text-slate-500">
+                <ModelSelector />
+              </div>
+
     try { await navigator.clipboard.writeText(text) } catch {}
   }
 
@@ -151,7 +156,10 @@ export default function ChatPageById() {
     <main>
       <div className="flex items-center justify-between mb-3">
         <h1 className="text-xl font-semibold">聊天</h1>
-        <Button variant="outline" onClick={copyAll} className="gap-2"><Copy size={16}/> 复制全部</Button>
+        <div className="flex items-center gap-3">
+          <ModelSelector />
+          <Button variant="outline" onClick={copyAll} className="gap-2"><Copy size={16}/> 复制全部</Button>
+        </div>
       </div>
 
       <div className="border rounded-xl min-h-[520px] bg-white overflow-hidden">
