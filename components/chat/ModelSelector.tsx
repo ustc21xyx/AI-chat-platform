@@ -38,7 +38,7 @@ export default function ModelSelector({ value, onChange, disabled }: Props) {
       >
         <option value="">系统默认</option>
         {models.map(m => (
-          <option key={m.id} value={m.id}>{m.label}</option>
+          <option key={m.id} value={m.id}>{m.label} <span className="text-slate-400">({m.id.split(':')[0]})</span></option>
         ))}
       </select>
     </div>

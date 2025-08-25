@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic'
 function keyForProviders() { const env = process.env.VERCEL_ENV || process.env.NODE_ENV || 'development'; return `admin:providers:${env}` }
 
 export async function OPTIONS() { return new Response(null, { status: 204 }) }
+export async function GET() { return Response.json({ ok: true, route: '/api/chat', methods: ['GET','POST','OPTIONS'] }) }
 
 export async function POST(req: Request) {
   const { model, messages, temperature, max_tokens } = await req.json()
