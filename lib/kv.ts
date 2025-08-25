@@ -1,6 +1,4 @@
-import { kv as vercelKV } from '@vercel/kv'
-
-// Fallback to Upstash REST if @vercel/kv is not configured
+// Minimal Upstash REST client (no extra deps)
 const REST_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL
 const REST_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN
 
@@ -16,27 +14,29 @@ async function restGet<T=any>(key: string): Promise<T | null> {
     cache: 'no-store',
   })
   if (!res.ok) return null
-  const text = await res.text()
-  try { return JSON.parse(text) as T } catch { return text as any }
+  // Upstash REST returns JSON like { result: "..." }
+  const data = await res.json().catch(() => null) as any
+  const raw = data?.result
+  if (raw == null) return null
+  try { return JSON.parse(raw) as T } catch { return raw as any }
 }
 
 async function restSet(key: string, value: any): Promise<void> {
   if (!REST_URL || !REST_TOKEN) return
-  const body = typeof value === 'string' ? value : JSON.stringify(value)
-  await fetch(`${REST_URL}/set/${encodeURIComponent(key)}`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${REST_TOKEN}`, 'Content-Type': 'application/json' },
-    body,
+  const raw = typeof value === 'string' ? value : JSON.stringify(value)
+  // Upstash REST supports /set/{key}/{value} (GET or POST). Use GET for simplicity.
+  await fetch(`${REST_URL}/set/${encodeURIComponent(key)}/${encodeURIComponent(raw)}`, {
+    headers: { Authorization: `Bearer ${REST_TOKEN}` },
+    cache: 'no-store',
   })
 }
 
 export const kv: KVClient = {
   async get(key) {
-    try { return await vercelKV.get(key) as any } catch {}
     return await restGet(key)
   },
   async set(key, value) {
-    try { await vercelKV.set(key, value) } catch { await restSet(key, value) }
+    await restSet(key, value)
   }
 }
 
