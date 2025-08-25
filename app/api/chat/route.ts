@@ -13,7 +13,11 @@ export async function POST(req: Request) {
 
   // Fallback to mock when no model provided
   if (!model) {
-    return fetch(new URL('/api/mock-chat', req.url)).then(r => r)
+    return fetch(new URL('/api/mock-chat', req.url), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages })
+    }).then(r => r)
   }
 
   // model is "provider:model_id"
