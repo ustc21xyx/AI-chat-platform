@@ -1,13 +1,15 @@
-import { NextRequest } from 'next/server'
 import { kv } from '@/lib/kv'
 import { decryptString } from '@/lib/crypto'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 function keyForProviders() { const env = process.env.VERCEL_ENV || process.env.NODE_ENV || 'development'; return `admin:providers:${env}` }
 
-export async function POST(req: NextRequest) {
-  const { model, messages, temperature, max_tokens, stream = true } = await req.json()
+export async function OPTIONS() { return new Response(null, { status: 204 }) }
+
+export async function POST(req: Request) {
+  const { model, messages, temperature, max_tokens } = await req.json()
 
   // Fallback to mock when no model provided
   if (!model) {
